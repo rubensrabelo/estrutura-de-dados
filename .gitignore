@@ -1,0 +1,71 @@
+# ==========================================
+# PYTHON
+# ==========================================
+# Arquivos compilados de bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribuições, pacotes e ambientes virtuais
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Ambientes virtuais (pip / venv / poetry / conda)
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Logs e relatórios de erro
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Ferramentas de teste, qualidade e cobertura
+.pytest_cache/
+.htmlcov/
+.tox/
+.nosexy/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# ==========================================
+# VISUAL STUDIO CODE (VS CODE)
+# ==========================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/code-workspace
+.history/
+*.code-workspace
+
+# ==========================================
+# SISTEMA OPERACIONAL
+# ==========================================
+.DS_Store
+Thumbs.db
