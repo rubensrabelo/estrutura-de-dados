@@ -18,7 +18,7 @@ Este repositório contém as minhas implementações e anotações de código de
 
 1. Clone este repositório em sua máquina:
    ```bash
-   git clone https://github.com/rubensrabelo/estrutura-de-dados.git
+   git clone git@github.com:rubensrabelo/estrutura-de-dados.git
    ```
 2. Acesse a pasta do algoritmo que deseja testar:
    ```bash
