@@ -24,30 +24,47 @@ def hash_multiplication(key, size):
 class HashTable:
     """Implementação de uma tabela hash usando encadeamento para tratar colisões."""
 
-    def __init__(self, size, hash_func=default_hash_function):
+    def __init__(self, size, hash_func=default_hash_function, load_factor_threshold=0.7):
         """Inicializa a tabela hash com o tamanho e a função de hash especificados."""
         self.size = size
         self.hash_func = hash_func
+        self.load_factor_threshold = load_factor_threshold
         self.table = [[] for _ in range(size)]
+        self.count = 0
+
+    def _resize(self):
+        """Duplica o tamanho da tabela hash e redistribui os elementos existentes."""
+        old_table = self.table
+        self.size *= 2
+        self.table = [[] for _ in range(self.size)]
+        self.count = 0
+
+        for resize_bucket in old_table:
+            for key, value in resize_bucket:
+                self.insert(key, value)
 
     def insert(self, key, value):
         """Insere ou atualiza um par chave-valor na tabela hash."""
+        if (self.count / self.size) >= self.load_factor_threshold:
+            self._resize()
+
         index = self.hash_func(key, self.size)
 
         for item in self.table[index]:
-            if item[0] == key:
-                item[1] = value
+            if item == key:
+                item = value
                 return
 
         self.table[index].append([key, value])
+        self.count += 1
 
     def search(self, key):
         """Busca o valor associado a uma chave na tabela hash."""
         index = self.hash_func(key, self.size)
 
         for item in self.table[index]:
-            if item[0] == key:
-                return item[1]
+            if item == key:
+                return item
 
         return None
 
@@ -56,8 +73,9 @@ class HashTable:
         index = self.hash_func(key, self.size)
 
         for i, item in enumerate(self.table[index]):
-            if item[0] == key:
+            if item == key:
                 self.table[index].pop(i)
+                self.count -= 1
                 return True
 
         return False
@@ -91,7 +109,7 @@ if __name__ == "__main__":
         ("Método Multiplicação", hash_multiplication),
     ]
 
-    print(f"--- BENCHMARK: 10.000 inserções em tabelas de tamanho {TABLE_SIZE} ---")
+    print("--- BENCHMARK: 10.000 inserções com redimensionamento automático ---")
 
     for name, func in FUNCTIONS:
         ht = HashTable(TABLE_SIZE, hash_func=func)
@@ -104,17 +122,17 @@ if __name__ == "__main__":
         elapsed_time = (end_time - start_time) * 1000
 
         total_collisions = 0
-        for bucket in ht.table:
-            if len(bucket) > 1:
-                total_collisions += len(bucket) - 1
+        for collision_bucket in ht.table:
+            if len(collision_bucket) > 1:
+                total_collisions += len(collision_bucket) - 1
 
-        lengths = [len(bucket) for bucket in ht.table]
-        mean = sum(lengths) / TABLE_SIZE
-        variance = sum((x - mean) ** 2 for x in lengths) / TABLE_SIZE
+        lengths = [len(std_bucket) for std_bucket in ht.table]
+        mean = sum(lengths) / ht.size
+        variance = sum((x - mean) ** 2 for x in lengths) / ht.size
         std_dev = math.sqrt(variance)
 
         print(f"\n[{name}]")
+        print(f"  Tamanho final da tabela: {ht.size}")
         print(f"  Tempo de montagem: {elapsed_time:.2f} ms")
         print(f"  Total de colisões reais: {total_collisions}")
         print(f"  Desvio Padrão (Distribuição): {std_dev:.2f}")
-x
