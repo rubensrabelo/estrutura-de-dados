@@ -1,36 +1,27 @@
 package ds
 
-import "errors"
-
-var (
-	ErrValueNotFound = errors.New("ds: value not found")
-	ErrEmptyTree     = errors.New("ds: tree is empty")
-)
-
-type TreeNode struct {
-	Value int
-	Left  *TreeNode
-	Right *TreeNode
-}
-
-type BinaryTree struct {
+type SimpleBinaryTree struct {
 	Root *TreeNode
 }
 
-func NewBinaryTree() *BinaryTree {
-	return &BinaryTree{Root: nil}
+func NewSimpleBinaryTree() *SimpleBinaryTree {
+	return &SimpleBinaryTree{Root: nil}
 }
 
-func (t *BinaryTree) Insert(value int) int {
+func (t *SimpleBinaryTree) GetRoot() *TreeNode {
+	return t.Root
+}
+
+func (t *SimpleBinaryTree) Insert(value int) int {
 	t.Root = t.insertRecursive(t.Root, value)
-	return t.Size(t.Root)
+	return t.Size()
 }
 
-func (t *BinaryTree) insertRecursive(node *TreeNode, value int) *TreeNode {
+func (t *SimpleBinaryTree) insertRecursive(node *TreeNode, value int) *TreeNode {
 	if node == nil {
 		return &TreeNode{Value: value}
 	}
-	if t.Height(node.Left) <= t.Height(node.Right) {
+	if t.heightRecursive(node.Left) <= t.heightRecursive(node.Right) {
 		node.Left = t.insertRecursive(node.Left, value)
 	} else {
 		node.Right = t.insertRecursive(node.Right, value)
@@ -38,7 +29,7 @@ func (t *BinaryTree) insertRecursive(node *TreeNode, value int) *TreeNode {
 	return node
 }
 
-func (t *BinaryTree) Delete(value int) (int, error) {
+func (t *SimpleBinaryTree) Delete(value int) (int, error) {
 	if t.Root == nil {
 		return 0, ErrEmptyTree
 	}
@@ -50,7 +41,7 @@ func (t *BinaryTree) Delete(value int) (int, error) {
 	return value, nil
 }
 
-func (t *BinaryTree) deleteRecursive(node *TreeNode, value int) (*TreeNode, error) {
+func (t *SimpleBinaryTree) deleteRecursive(node *TreeNode, value int) (*TreeNode, error) {
 	if node == nil {
 		return nil, ErrValueNotFound
 	}
@@ -81,7 +72,7 @@ func (t *BinaryTree) deleteRecursive(node *TreeNode, value int) (*TreeNode, erro
 	return node, err
 }
 
-func (t *BinaryTree) findMax(node *TreeNode) *TreeNode {
+func (t *SimpleBinaryTree) findMax(node *TreeNode) *TreeNode {
 	if node == nil {
 		return nil
 	}
@@ -97,7 +88,7 @@ func (t *BinaryTree) findMax(node *TreeNode) *TreeNode {
 	return max
 }
 
-func (t *BinaryTree) findMin(node *TreeNode) *TreeNode {
+func (t *SimpleBinaryTree) findMin(node *TreeNode) *TreeNode {
 	if node == nil {
 		return nil
 	}
@@ -113,11 +104,11 @@ func (t *BinaryTree) findMin(node *TreeNode) *TreeNode {
 	return min
 }
 
-func (t *BinaryTree) Search(value int) (*TreeNode, error) {
+func (t *SimpleBinaryTree) Search(value int) (*TreeNode, error) {
 	return t.searchRecursive(t.Root, value)
 }
 
-func (t *BinaryTree) searchRecursive(node *TreeNode, value int) (*TreeNode, error) {
+func (t *SimpleBinaryTree) searchRecursive(node *TreeNode, value int) (*TreeNode, error) {
 	if node == nil {
 		return nil, ErrValueNotFound
 	}
@@ -130,36 +121,35 @@ func (t *BinaryTree) searchRecursive(node *TreeNode, value int) (*TreeNode, erro
 	return t.searchRecursive(node.Right, value)
 }
 
-func (t *BinaryTree) TraverseInOrder(node *TreeNode, res *[]int) {
-	if node == nil {
-		return
-	}
-	t.TraverseInOrder(node.Left, res)
-	*res = append(*res, node.Value)
-	t.TraverseInOrder(node.Right, res)
+func (t *SimpleBinaryTree) Size() int {
+	return t.sizeRecursive(t.Root)
 }
 
-func (t *BinaryTree) Size(node *TreeNode) int {
+func (t *SimpleBinaryTree) sizeRecursive(node *TreeNode) int {
 	if node == nil {
 		return 0
 	}
-	return 1 + t.Size(node.Left) + t.Size(node.Right)
+	return 1 + t.sizeRecursive(node.Left) + t.sizeRecursive(node.Right)
 }
 
-func (t *BinaryTree) Height(node *TreeNode) int {
+func (t *SimpleBinaryTree) Height() int {
+	return t.heightRecursive(t.Root)
+}
+
+func (t *SimpleBinaryTree) heightRecursive(node *TreeNode) int {
 	if node == nil {
 		return 0
 	}
-	leftHeight := t.Height(node.Left)
-	rightHeight := t.Height(node.Right)
+	leftHeight := t.heightRecursive(node.Left)
+	rightHeight := t.heightRecursive(node.Right)
 	if leftHeight > rightHeight {
 		return leftHeight + 1
 	}
 	return rightHeight + 1
 }
 
-func (t *BinaryTree) FindMaxSumLevel() (int, int) {
-	h := t.Height(t.Root)
+func (t *SimpleBinaryTree) FindMaxSumLevel() (int, int) {
+	h := t.Height()
 	maxSum := -1000000
 	maxLevel := 0
 	for i := 1; i <= h; i++ {
@@ -172,7 +162,7 @@ func (t *BinaryTree) FindMaxSumLevel() (int, int) {
 	return maxLevel, maxSum
 }
 
-func (t *BinaryTree) getLevelSum(node *TreeNode, level int) int {
+func (t *SimpleBinaryTree) getLevelSum(node *TreeNode, level int) int {
 	if node == nil {
 		return 0
 	}
@@ -182,15 +172,19 @@ func (t *BinaryTree) getLevelSum(node *TreeNode, level int) int {
 	return t.getLevelSum(node.Left, level-1) + t.getLevelSum(node.Right, level-1)
 }
 
-func (t *BinaryTree) LCA(node, n1, n2 *TreeNode) *TreeNode {
+func (t *SimpleBinaryTree) LCA(n1, n2 *TreeNode) *TreeNode {
+	return t.lcaRecursive(t.Root, n1, n2)
+}
+
+func (t *SimpleBinaryTree) lcaRecursive(node, n1, n2 *TreeNode) *TreeNode {
 	if node == nil {
 		return nil
 	}
 	if node == n1 || node == n2 {
 		return node
 	}
-	leftLCA := t.LCA(node.Left, n1, n2)
-	rightLCA := t.LCA(node.Right, n1, n2)
+	leftLCA := t.lcaRecursive(node.Left, n1, n2)
+	rightLCA := t.lcaRecursive(node.Right, n1, n2)
 	if leftLCA != nil && rightLCA != nil {
 		return node
 	}

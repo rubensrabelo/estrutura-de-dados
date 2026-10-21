@@ -7,7 +7,8 @@ import (
 
 func main() {
 	fmt.Println("--- 6.5 Binary Tree Operations (Recursive) ---")
-	tree := ds.NewBinaryTree()
+	
+	var tree ds.BinaryTree = ds.NewSimpleBinaryTree()
 
 	tree.Insert(1)
 	tree.Insert(2)
@@ -15,11 +16,16 @@ func main() {
 	tree.Insert(4)
 	tree.Insert(5)
 
-	var elements []int
-	tree.TraverseInOrder(tree.Root, &elements)
-	fmt.Println("In-Order Traversal:", elements)
-	fmt.Printf("Tree Size: %d\n", tree.Size(tree.Root))
-	fmt.Printf("Tree Height: %d\n", tree.Height(tree.Root))
+	traverser := ds.NewTraversalService(tree)
+
+	fmt.Println("\n--- Executing Tree Traversals (via DI) ---")
+	fmt.Println("Pre-Order Traversal: ", traverser.PreOrder())
+	fmt.Println("In-Order Traversal:  ", traverser.InOrder())
+	fmt.Println("Post-Order Traversal:", traverser.PostOrder())
+	fmt.Println("Level-Order (BFS):   ", traverser.LevelOrder())
+
+	fmt.Printf("\nTree Size: %d\n", tree.Size())
+	fmt.Printf("Tree Height: %d\n", tree.Height())
 
 	fmt.Println("\n--- Testing Search ---")
 	node, err := tree.Search(3)
@@ -33,7 +39,7 @@ func main() {
 
 	node1, _ := tree.Search(4)
 	node2, _ := tree.Search(5)
-	lcaNode := tree.LCA(tree.Root, node1, node2)
+	lcaNode := tree.LCA(node1, node2)
 	if lcaNode != nil {
 		fmt.Printf("LCA of 4 and 5 is: %d\n", lcaNode.Value)
 	}
@@ -44,7 +50,5 @@ func main() {
 		fmt.Printf("Deleted value: %d\n", deleted)
 	}
 
-	elements = []int{}
-	tree.TraverseInOrder(tree.Root, &elements)
-	fmt.Println("In-Order Traversal After Delete:", elements)
+	fmt.Println("In-Order Traversal After Delete:", traverser.InOrder())
 }
