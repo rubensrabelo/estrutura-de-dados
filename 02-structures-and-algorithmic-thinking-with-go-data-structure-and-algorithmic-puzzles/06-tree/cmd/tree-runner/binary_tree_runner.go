@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func main() {
+func runBinaryTreeRunner() {
 	fmt.Println("--- 6.5 Binary Tree Operations (Recursive) ---")
 	
 	var tree ds.BinaryTree = ds.NewSimpleBinaryTree()
